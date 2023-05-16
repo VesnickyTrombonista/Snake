@@ -142,6 +142,7 @@ handleKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState =    if (isGameOv
                                                                     else boostDirection gameState
 
 handleKeys _ gameState = gameState
+-- necessary for program running, else throws exception
 
 -- adding fps can change the difficulty because of speed
 
