@@ -29,7 +29,8 @@ initialGameState gameOver score = GameState { getSnake = [(snakeX, snakeY)], get
                 foodY = 12      -- 24 `div` 2
 
 changeDirection :: GameState -> Direction -> GameState
-changeDirection (GameState snake food direction game random score) direction2 = GameState snake food direction2 game random score
+changeDirection (GameState snake food direction game random score) direction2 = 
+        GameState snake food direction2 game random score
 
 boostDirection :: GameState -> GameState -- used, when space is down for double speed
 boostDirection gameState = updateState 2 gameState 
@@ -137,9 +138,10 @@ handleKeys (EventKey (Char 'd') Down _ _) gameState = changeDirection gameState 
 handleKeys (EventKey (Char 'w') Down _ _) gameState = changeDirection gameState UP 
 handleKeys (EventKey (Char 's') Down _ _) gameState = changeDirection gameState DOWN 
 -- start + boost
-handleKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState =    if (isGameOver gameState)
-                                                                    then initialGameState False $ getScore gameState
-                                                                    else boostDirection gameState
+handleKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState = 
+        if (isGameOver gameState) 
+          then initialGameState False $ getScore gameState
+          else boostDirection gameState
 
 handleKeys _ gameState = gameState
 -- necessary for program running, else throws exception
