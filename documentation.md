@@ -1,9 +1,18 @@
-SnakeGame
-Uživatelská dokumentace
+# SnakeGame
 
-Ovládání:
+## Uživatelská dokumentace
+
+### Popis programu:
+
+### Specifikace: 
+
+### Ovládání:
 
 
+## Programátorská dokumentace
 
+### Popis:
 
-Programátorská dokumentace
+### Detaily:
+
+#### Závěrem:
