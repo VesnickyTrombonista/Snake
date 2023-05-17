@@ -4,14 +4,15 @@ import Debug.Trace
 import Data.Map
 import System.Random
 
+type Score = Int
 type Food = (Int, Int)
 type Snake = [Food]
-type Score = Int
+
 data Direction = UP | DOWN | LEFT | RIGHT deriving (Eq, Ord)
 data GameState = GameState {getSnake :: Snake, getFood :: Food, getDirection :: Direction,
                             isGameOver :: Bool, getRandomStdGen :: StdGen, getScore :: Score}
 
-directionVectorMap = fromList [(UP, (0, -1)), (DOWN, (0, 1)), (LEFT, (-1, 0)), (RIGHT, (1, 0))] 
+directionVectors = fromList [(UP, (0, -1)), (DOWN, (0, 1)), (LEFT, (-1, 0)), (RIGHT, (1, 0))] 
 -- make up like dictionary
 
 window :: Display
@@ -20,13 +21,16 @@ window = InWindow "Snake Game" (800, 570) (250, 50) -- size and position from up
 windowBackground :: Color
 windowBackground = white
 
-initialState gameOver score = GameState { getSnake = [(snakeX, snakeY)], getFood = (foodX, foodY), 
+initialState gameOver score = GameState { getSnake = [snake], getFood = food, 
         getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen 100, getScore = score}
                                 -- columns = 32, rows = 24
-        where   snakeX = 8      -- 32 `div` 4
+        where   snake = (snakeX, snakeY)
+                snakeX = 8      -- 32 `div` 4
                 snakeY = 6      -- 24 `div` 4
+                food = (foodX, foodY)
                 foodX = 16      -- 32 `div` 2
                 foodY = 12      -- 24 `div` 2
+                
 
 changeDirection :: GameState -> Direction -> GameState
 changeDirection (GameState snake food direction game random score) direction2 = 
@@ -95,7 +99,7 @@ move food direction snake = if foodEaten
                             else (False, newHead : init snake) -- init, new snake every frame
                         where   foodEaten = newHead == food 
                                 newHead =  (headX + shiftX, headY + shiftY)
-                                (shiftX, shiftY) = directionVectorMap ! direction 
+                                (shiftX, shiftY) = directionVectors ! direction 
                                 --(!) :: Ord k => Map k a -> k -> a, on this position, in Dict
                                 (headX, headY) = head snake
                                                         
