@@ -1,5 +1,4 @@
 import Graphics.Gloss
-import Graphics.Gloss.Juicy
 import Graphics.Gloss.Interface.Pure.Game
 import Data.Map
 import System.Random
@@ -161,9 +160,6 @@ servicePressedKeys _ gameState = gameState
 -- adding fps can change the difficulty because of speed
 
 main :: IO ()
-main = do 
-        -- icon <- loadIcon
-        -- show icon
-        play window windowBackground 10 (initialState True 0) renderAll servicePressedKeys updateState
-                -- & \window -> window { windowIconify = Just icon } 
+main = play window windowBackground 10 (initialState True 0) renderAll servicePressedKeys updateState
+
         

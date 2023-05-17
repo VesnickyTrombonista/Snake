@@ -4,7 +4,7 @@ For more information see documentation.md, where you can find user-part and prog
 It is only in Czech, but I hope everybody knows this game very well.
 I was new to using Gloss, so I was inspired by https://github.com/leonardo-ono/HaskellSnakeGame.
 
-During the installationn I had few problems, so I install cabal, random, freeglut3 and gloss-juicy.
+During the installationn I had few problems, so I install cabal, random and freeglut3.
 
 I find useful https://stackoverflow.com/questions/42072958/haskell-with-opengl-unknown-glut-entry-glutinit, when I had error: user error (unknown GLUT entry glutInit).
 
