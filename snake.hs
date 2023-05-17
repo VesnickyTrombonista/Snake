@@ -42,37 +42,38 @@ checkGameOver snake = headX == 0 || headX == 32 || headY == 0 || headY == 24 || 
                                 body = tail snake
 
 renderAll :: GameState -> Picture
-renderAll gameState = pictures $   [ fillRectangleBy black (16, 0) (660, 20),   -- top line
-                                     fillRectangleBy black (16, 24) (660, 20),  -- bottom line
-                                     fillRectangleBy black (0, 12) (20, 470),   -- left line
-                                     fillRectangleBy black (32, 12) (20, 470)  -- right line
-                                ] ++
-                                  fmap (convertToPicture chartreuse) snake ++    -- body
-                                  fmap (convertToPicture orange) [snakeHead] ++  -- head
-                                  fmap (convertToPicture blue) [food] ++         -- food
-                                  gameOverPicture
-    where   snake = getSnake gameState 
-            food = getFood gameState
-            score = getScore gameState
-            snakeHead = head snake
-            -- getting necessary values
+renderAll gameState = pictures $        [ fillRectangleBy black (16, 0) (660, 20),   -- top line
+                                          fillRectangleBy black (16, 24) (660, 20),  -- bottom line
+                                          fillRectangleBy black (0, 12) (20, 470),   -- left line
+                                          fillRectangleBy black (32, 12) (20, 470)  -- right line
+                                        ] ++
+                                        fmap (convertToPicture chartreuse) snake ++    -- body
+                                        fmap (convertToPicture orange) [snakeHead] ++  -- head
+                                        fmap (convertToPicture blue) [food] ++         -- food
+                                        gameOverPicture
+        where   snake = getSnake gameState 
+                food = getFood gameState
+                score = getScore gameState
+                snakeHead = head snake
+                -- getting necessary values
 
-            convertToPicture :: Color -> (Int, Int) -> Picture
-            convertToPicture color' (x, y) = fillRectangleBy color' (x, y) (20, 20) -- 20x20 size of food etc.
+                convertToPicture :: Color -> (Int, Int) -> Picture
+                convertToPicture color' (x, y) = fillRectangleBy color' (x, y) (20, 20) 
+                -- 20x20 size of food, snakeHead etc.
         
-            fillRectangleBy color' (x, y) (width, height) =  color color' $ scale 1 (-1) $ 
-                translate (fromIntegral(x) * 20 - 320) (fromIntegral(y) * 20 - 240) $ 
-                rectangleSolid width height
+                fillRectangleBy color' (x, y) (width, height) =  color color' $ scale 1 (-1) $ 
+                        translate (fromIntegral(x) * 20 - 320) (fromIntegral(y) * 20 - 240) $ 
+                        rectangleSolid width height
 
-            gameOverPicture =   if (isGameOver gameState) 
-                                then [  
+                gameOverPicture = if (isGameOver gameState) 
+                                    then [  
                                         color aquamarine $ 
-                                        translate (-110) (180) $ 
+                                        translate (-130) (180) $ 
                                         scale 0.25 0.25 $ 
-                                        text $ "Best score: " ++ show score 
+                                        text $ "Best score : " ++ show score 
                                         ,
                                         color red $ 
-                                        translate (-200) (0) $ 
+                                        translate (-155) (0) $ 
                                         scale 0.4 0.4 $ 
                                         text "GAME OVER"
                                         ,
@@ -81,11 +82,12 @@ renderAll gameState = pictures $   [ fillRectangleBy black (16, 0) (660, 20),   
                                         scale 0.2 0.2 $ 
                                         text "Press SPACE to start."
                                         ] 
-                                else [
+                                    else [
                                         color blue $ 
                                         translate (-40) (260) $ 
                                         scale 0.15 0.15 $ 
-                                        text $ "Score: " ++ show (length(snake)) ]
+                                        text $ "Score: " ++ show (length(snake)) 
+                                        ]
 
 move :: Food -> Direction -> Snake -> (Bool, Snake)
 move food direction snake = if foodEaten 
@@ -101,27 +103,27 @@ updateState :: Float -> GameState -> GameState
 updateState seconds gameState =  if (gameOver) 
                                 then gameState
                                 else GameState newSnake newFood direction newGameOver newStdGen newScore
-    where   snake = getSnake gameState 
-            food = getFood gameState
-            direction = getDirection gameState
-            gameOver = isGameOver gameState
-            stdGen = getRandomStdGen gameState
-            score = getScore gameState
-            -- getting actual arguments
-            newScore =   if (length newSnake > score)
-                           then score + 1
-                           else score
-            (foodEaten, newSnake) = move food direction snake
-            (generatedFood, newStdGen) = generateNewFood newSnake stdGen
-            newFood =   if foodEaten 
-                          then generatedFood 
-                          else food
-            newGameOver = checkGameOver newSnake
+        where   snake = getSnake gameState 
+                food = getFood gameState
+                direction = getDirection gameState
+                gameOver = isGameOver gameState
+                stdGen = getRandomStdGen gameState
+                score = getScore gameState
+                -- getting actual arguments
+                newScore =   if (length newSnake > score)
+                               then score + 1
+                               else score
+                (foodEaten, newSnake) = move food direction snake
+                (generatedFood, newStdGen) = generateNewFood newSnake stdGen
+                newFood =   if foodEaten 
+                              then generatedFood 
+                              else food
+                newGameOver = checkGameOver newSnake
 
 generateNewFood :: Snake -> StdGen -> (Food, StdGen)
 generateNewFood snake stdGen =  if newFood `elem` snake
-                                then generateNewFood snake stdGen3
-                                else ((foodX, foodY), stdGen3)
+                                  then generateNewFood snake stdGen3
+                                  else ((foodX, foodY), stdGen3)
         where   (foodX, stdGen2) = randomR (1, 31) stdGen
                 (foodY, stdGen3) = randomR (1, 23) stdGen2
                 newFood = (foodX, foodY)
