@@ -1,6 +1,6 @@
 import Graphics.Gloss
+import Graphics.Gloss.Juicy
 import Graphics.Gloss.Interface.Pure.Game
-import Debug.Trace
 import Data.Map
 import System.Random
 
@@ -15,6 +15,12 @@ data GameState = GameState {getSnake :: Snake, getFood :: Food, getDirection :: 
 directionVectors = fromList [(UP, (0, -1)), (DOWN, (0, 1)), (LEFT, (-1, 0)), (RIGHT, (1, 0))] 
 -- make up like dictionary
 
+iconPath :: FilePath
+iconPath = "snake.jpg"
+
+loadIcon :: IO Picture
+loadIcon = undefined -- loadJuicyJPG iconPath
+
 window :: Display
 window = InWindow "Snake Game" (800, 570) (250, 50) -- size and position from upper left corner
 
@@ -23,23 +29,22 @@ windowBackground = white
 
 initialState gameOver score = GameState { getSnake = [snake], getFood = food, 
         getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen 100, getScore = score}
-                                -- columns = 32, rows = 24
+        -- columns = 32, rows = 24
         where   snake = (snakeX, snakeY)
                 snakeX = 8      -- 32 `div` 4
                 snakeY = 6      -- 24 `div` 4
                 food = (foodX, foodY)
                 foodX = 16      -- 32 `div` 2
                 foodY = 12      -- 24 `div` 2
-                
 
 changeDirection :: GameState -> Direction -> GameState
 changeDirection (GameState snake food direction game random score) direction2 = 
         GameState snake food direction2 game random score
 
-boostDirection :: GameState -> GameState -- used, when space is down for double speed
+boostDirection :: GameState -> GameState -- used, when 'space' is down for double speed
 boostDirection gameState = updateState 2 gameState 
 
-checkGameOver :: Snake -> Bool -- check, if snake is in a picture
+checkGameOver :: Snake -> Bool -- check, if snake is in a picture, where: columns = 32, rows = 24
 checkGameOver snake = headX == 0 || headX == 32 || headY == 0 || headY == 24 || headSnake `elem` body
                         where   headSnake = head snake
                                 (headX, headY) = headSnake
@@ -93,8 +98,8 @@ renderAll gameState = pictures $        [ fillRectangleBy black (16, 0) (660, 20
                                         text $ "Score: " ++ show (length(snake)) 
                                         ]
 
-move :: Food -> Direction -> Snake -> (Bool, Snake)
-move food direction snake = if foodEaten 
+movePlayer :: Food -> Direction -> Snake -> (Bool, Snake)
+movePlayer food direction snake = if foodEaten 
                             then (True, newHead : snake)
                             else (False, newHead : init snake) -- init, new snake every frame
                         where   foodEaten = newHead == food 
@@ -117,7 +122,7 @@ updateState seconds gameState =  if (gameOver)
                 newScore =   if (length newSnake > score)
                                then score + 1
                                else score
-                (foodEaten, newSnake) = move food direction snake
+                (foodEaten, newSnake) = movePlayer food direction snake
                 (generatedFood, newStdGen) = generateNewFood newSnake stdGen
                 newFood =   if foodEaten 
                               then generatedFood 
@@ -148,6 +153,7 @@ servicePressedKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState =
         if (isGameOver gameState) 
           then initialState False $ getScore gameState
           else boostDirection gameState
+-- Esc key is default used for exit
 
 servicePressedKeys _ gameState = gameState
 -- necessary for program running, else throws exception
@@ -155,4 +161,9 @@ servicePressedKeys _ gameState = gameState
 -- adding fps can change the difficulty because of speed
 
 main :: IO ()
-main = play window windowBackground 8 (initialState True 0) renderAll servicePressedKeys updateState
+main = do 
+        -- icon <- loadIcon
+        -- show icon
+        play window windowBackground 10 (initialState True 0) renderAll servicePressedKeys updateState
+                -- & \window -> window { windowIconify = Just icon } 
+        
