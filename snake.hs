@@ -14,12 +14,6 @@ data GameState = GameState {getSnake :: Snake, getFood :: Food, getDirection :: 
 directionVectors = fromList [(UP, (0, -1)), (DOWN, (0, 1)), (LEFT, (-1, 0)), (RIGHT, (1, 0))] 
 -- make up like dictionary
 
-iconPath :: FilePath
-iconPath = "snake.jpg"
-
-loadIcon :: IO Picture
-loadIcon = undefined -- loadJuicyJPG iconPath
-
 window :: Display
 window = InWindow "Snake Game" (800, 570) (250, 50) -- size and position from upper left corner
 
