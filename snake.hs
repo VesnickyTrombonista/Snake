@@ -17,10 +17,10 @@ directionVectorMap = fromList [(UP, (0, -1)), (DOWN, (0, 1)), (LEFT, (-1, 0)), (
 window :: Display
 window = InWindow "Snake Game" (800, 570) (250, 50) -- size and position from upper left corner
 
-background :: Color
-background = white
+windowBackground :: Color
+windowBackground = white
 
-initialGameState gameOver score = GameState { getSnake = [(snakeX, snakeY)], getFood = (foodX, foodY), 
+initialState gameOver score = GameState { getSnake = [(snakeX, snakeY)], getFood = (foodX, foodY), 
         getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen 100, getScore = score}
                                 -- columns = 32, rows = 24
         where   snakeX = 8      -- 32 `div` 4
@@ -41,11 +41,11 @@ checkGameOver snake = headX == 0 || headX == 32 || headY == 0 || headY == 24 || 
                                 (headX, headY) = headSnake
                                 body = tail snake
 
-render :: GameState -> Picture
-render gameState = pictures $   [ fillRectangle black (16, 0) (660, 20)   -- top line
-                                , fillRectangle black (16, 24) (660, 20)  -- bottom line
-                                , fillRectangle black (0, 12) (20, 470)   -- left line
-                                , fillRectangle black (32, 12) (20, 470)  -- right line
+renderAll :: GameState -> Picture
+renderAll gameState = pictures $   [ fillRectangleBy black (16, 0) (660, 20),   -- top line
+                                     fillRectangleBy black (16, 24) (660, 20),  -- bottom line
+                                     fillRectangleBy black (0, 12) (20, 470),   -- left line
+                                     fillRectangleBy black (32, 12) (20, 470)  -- right line
                                 ] ++
                                   fmap (convertToPicture chartreuse) snake ++    -- body
                                   fmap (convertToPicture orange) [snakeHead] ++  -- head
@@ -58,9 +58,9 @@ render gameState = pictures $   [ fillRectangle black (16, 0) (660, 20)   -- top
             -- getting necessary values
 
             convertToPicture :: Color -> (Int, Int) -> Picture
-            convertToPicture color' (x, y) = fillRectangle color' (x,y) (20,20) -- 20x20 size of food etc.
+            convertToPicture color' (x, y) = fillRectangleBy color' (x, y) (20, 20) -- 20x20 size of food etc.
         
-            fillRectangle color' (x, y) (width, height) =  color color' $ scale 1 (-1) $ 
+            fillRectangleBy color' (x, y) (width, height) =  color color' $ scale 1 (-1) $ 
                 translate (fromIntegral(x) * 20 - 320) (fromIntegral(y) * 20 - 240) $ 
                 rectangleSolid width height
 
@@ -73,7 +73,7 @@ render gameState = pictures $   [ fillRectangle black (16, 0) (660, 20)   -- top
                                         ,
                                         color red $ 
                                         translate (-200) (0) $ 
-                                        scale 0.5 0.5 $ 
+                                        scale 0.4 0.4 $ 
                                         text "GAME OVER"
                                         ,
                                         color blue $ 
@@ -126,27 +126,27 @@ generateNewFood snake stdGen =  if newFood `elem` snake
                 (foodY, stdGen3) = randomR (1, 23) stdGen2
                 newFood = (foodX, foodY)
 
-handleKeys :: Event -> GameState -> GameState
+servicePressedKeys :: Event -> GameState -> GameState
 -- arrows
-handleKeys (EventKey (SpecialKey KeyLeft ) Down _ _) gameState = changeDirection gameState LEFT
-handleKeys (EventKey (SpecialKey KeyRight) Down _ _) gameState = changeDirection gameState RIGHT 
-handleKeys (EventKey (SpecialKey KeyUp   ) Down _ _) gameState = changeDirection gameState UP 
-handleKeys (EventKey (SpecialKey KeyDown ) Down _ _) gameState = changeDirection gameState DOWN 
+servicePressedKeys (EventKey (SpecialKey KeyLeft ) Down _ _) gameState = changeDirection gameState LEFT
+servicePressedKeys (EventKey (SpecialKey KeyRight) Down _ _) gameState = changeDirection gameState RIGHT 
+servicePressedKeys (EventKey (SpecialKey KeyUp   ) Down _ _) gameState = changeDirection gameState UP 
+servicePressedKeys (EventKey (SpecialKey KeyDown ) Down _ _) gameState = changeDirection gameState DOWN 
 -- wasd
-handleKeys (EventKey (Char 'a') Down _ _) gameState = changeDirection gameState LEFT
-handleKeys (EventKey (Char 'd') Down _ _) gameState = changeDirection gameState RIGHT 
-handleKeys (EventKey (Char 'w') Down _ _) gameState = changeDirection gameState UP 
-handleKeys (EventKey (Char 's') Down _ _) gameState = changeDirection gameState DOWN 
+servicePressedKeys (EventKey (Char 'a') Down _ _) gameState = changeDirection gameState LEFT
+servicePressedKeys (EventKey (Char 'd') Down _ _) gameState = changeDirection gameState RIGHT 
+servicePressedKeys (EventKey (Char 'w') Down _ _) gameState = changeDirection gameState UP 
+servicePressedKeys (EventKey (Char 's') Down _ _) gameState = changeDirection gameState DOWN 
 -- start + boost
-handleKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState = 
+servicePressedKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState = 
         if (isGameOver gameState) 
-          then initialGameState False $ getScore gameState
+          then initialState False $ getScore gameState
           else boostDirection gameState
 
-handleKeys _ gameState = gameState
+servicePressedKeys _ gameState = gameState
 -- necessary for program running, else throws exception
 
 -- adding fps can change the difficulty because of speed
 
 main :: IO ()
-main = play window background 8 (initialGameState True 0) render handleKeys updateState
+main = play window windowBackground 8 (initialState True 0) renderAll servicePressedKeys updateState
