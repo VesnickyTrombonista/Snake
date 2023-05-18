@@ -13,9 +13,11 @@ Vždy se vygeneruje jen jeden symbol jablka - modrý čtvereček.
 Náš had má oranžovou hlavu a zelený ocas, který se po snězení potravy prodlouží.
 Každý článek hada je jednotkový.
 Pozor si musíme dát na nabourání. Nesmíme narazit do sebe a ani do stěn, které ohraničují hrací pole.
-Zároveň nad hrou vidíme aktuální délku hada (skóre). V případě, že nabouráme, tak se vracíme na úvodní obrazovku, kde se zobrazí informace o maximálním skóre. 
+Zároveň nad hrou vidíme aktuální délku hada (skóre). V případě, že nabouráme, tak se vracíme na úvodní
+obrazovku, kde se zobrazí informace o maximálním skóre. 
 
-Hra nemá úplně vyhrávající stav, ale vítězství je, když had dosáhne maximální délky, tj. zabírá celé hrací pole. Odpovídá to 713 bodům.
+Hra nemá úplně vyhrávající stav, ale vítězství je, když had dosáhne maximální délky, tj. zabírá celé hrací
+pole. Odpovídá to 713 bodům.
 
 Odejít ze hry můžeme v libovolný moment. Skóre se mezi jednotlivým spuštěním programu neukládájí.
 
@@ -34,3 +36,4 @@ Odejít ze hry je možné klávesou Esc (případně křížkem okna).
 Pro načítání skóre mezi jednotlivým spuštěním je možné přidat dokument, který by sloužil pro čtení a zápis maximálního skóre.
 
 #### Závěrem:
+Tvoření hry mě bavilo a dost jsem se u toho naučil, např. pracovat s haskellem a jeho knihovnami. Také mě potěšilo, že lze udělat okenní aplikaci a hru v ní.
