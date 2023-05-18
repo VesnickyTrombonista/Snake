@@ -1,6 +1,6 @@
 # Snake
 My first small game in Haskell for a university project of functional programming.
-For more information see documentation.md, where you can find user-part and program-part as well.
+You can see documentation.md for more information, where you can find user-part and program-part as well.
 It is only in Czech, but I hope everybody knows this game very well.
 I was new to using Gloss, so I was inspired by https://github.com/leonardo-ono/HaskellSnakeGame.
 
