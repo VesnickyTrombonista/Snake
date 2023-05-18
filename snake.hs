@@ -31,8 +31,14 @@ initialState gameOver score = GameState { getSnake = [snake], getFood = food,
                 foodY = 12      -- 24 `div` 2
 
 changeDirection :: GameState -> Direction -> GameState
-changeDirection (GameState snake food direction game random score) direction2 = 
-        GameState snake food direction2 game random score
+changeDirection state@(GameState snake food direction1 game random score) direction2 = 
+        if ((fst vector1 + fst vector2) == 0 && (snd vector1 + snd vector2) == 0)
+          then state -- not backwards and keep the same way
+          else GameState snake food direction2 game random score 
+        -- when e.g. direction1=up and change left+down is very fast, then is colision like backwards movement
+        where 
+                vector1 = directionVectors ! direction1
+                vector2 = directionVectors ! direction2
 
 boostDirection :: GameState -> GameState -- used, when 'space' is down for double speed
 boostDirection gameState = updateState 2 gameState 
@@ -154,6 +160,6 @@ servicePressedKeys _ gameState = gameState
 -- adding fps can change the difficulty because of speed
 
 main :: IO ()
-main = play window windowBackground 10 (initialState True 0) renderAll servicePressedKeys updateState
+main = play window windowBackground 8 (initialState True 0) renderAll servicePressedKeys updateState
 
         
