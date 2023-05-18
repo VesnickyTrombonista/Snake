@@ -162,4 +162,3 @@ servicePressedKeys _ gameState = gameState
 main :: IO ()
 main = play window windowBackground 8 (initialState True 0) renderAll servicePressedKeys updateState
 
-        
