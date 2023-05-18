@@ -22,7 +22,7 @@ windowBackground = white
 
 initialState gameOver score = GameState { getSnake = [snake], getFood = food, 
         getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen 100, getScore = score}
-        -- columns = 32, rows = 24
+        -- columns = 32, rows = 24, raw values are faster for rendering than dividing
         where   snake = (snakeX, snakeY)
                 snakeX = 8      -- 32 `div` 4
                 snakeY = 6      -- 24 `div` 4

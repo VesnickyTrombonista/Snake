@@ -32,8 +32,13 @@ Odejít ze hry je možné klávesou Esc (případně křížkem okna).
 ### Implementace:
 
 ### Detaily:
-713 bodům. (23x31), pak už musíme nutně narazit alespoň do sebe.
-Pro načítání skóre mezi jednotlivým spuštěním je možné přidat dokument, který by sloužil pro čtení a zápis maximálního skóre.
+Většina detailů je vysvětlena v komentářích přímo v kódu, aby to bylo na místě, kde to poslouží nejvíce.
+Maximum: 713 bodů (23x31) odpovídá rozměrům pole, protože nultý a poslední index tvoří hranice pole.
+Větší skóre získat nelze, pak už musíme nutně narazit alespoň do sebe/do zdi.
+Není zatím otestováno, jak se začne chovat generátor, pokud bychom tohoto skŕe dosáhli, nejspíš by nám pod hlavu dal potravu a mi bychom si kousli do ocasu/narazili do stěny.
+
+### Možné vylepšení:
+Pro načítání skóre mezi jednotlivým spuštěním je možné přidat dokument, který by sloužil pro čtení a zápis maximálního skóre a tak v případě velmi dobrého výsledku bychom tuto informaci neztratili.
 
 #### Závěrem:
 Tvoření hry mě bavilo a dost jsem se u toho naučil, např. pracovat s haskellem a jeho knihovnami. Také mě potěšilo, že lze udělat okenní aplikaci a hru v ní.
