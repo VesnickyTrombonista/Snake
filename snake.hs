@@ -99,9 +99,9 @@ renderAll gameState = pictures $        [ fillRectangleBy black (16, 0) (660, 20
 
 movePlayer :: Food -> Direction -> Snake -> (Bool, Snake)
 movePlayer food direction snake = if foodEaten 
-                            then (True, newHead : snake)
-                            else (False, newHead : init snake) -- init, new snake every frame
-                        where   foodEaten = newHead == food 
+                                    then (True, newHead : snake)
+                                    else (False, newHead : init snake) -- init, new snake every frame
+                        where   foodEaten = food == newHead 
                                 newHead =  (headX + shiftX, headY + shiftY)
                                 (shiftX, shiftY) = directionVectors ! direction 
                                 --(!) :: Ord k => Map k a -> k -> a, on this position, in Dict
