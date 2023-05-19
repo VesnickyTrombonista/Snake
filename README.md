@@ -2,7 +2,7 @@
 My first small game in Haskell for a university project of functional programming.
 You can see documentation.md for more information, where you can find user-part and program-part as well.
 It is only in Czech, but I hope everybody knows this game very well.
-I was new to using Gloss, so I was inspired by https://github.com/leonardo-ono/HaskellSnakeGame.
+I was new to using Gloss, so I found helpful https://andrew.gibiansky.com/blog/haskell/haskell-gloss/.
 
 During the installationn I had few problems, so I install cabal, random and freeglut3.
 
