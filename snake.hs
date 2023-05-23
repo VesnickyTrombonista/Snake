@@ -53,7 +53,7 @@ renderAll :: GameState -> Picture
 renderAll gameState = pictures $        [ fillRectangleBy black (16, 0) (660, 20),   -- top line
                                           fillRectangleBy black (16, 24) (660, 20),  -- bottom line
                                           fillRectangleBy black (0, 12) (20, 470),   -- left line
-                                          fillRectangleBy black (32, 12) (20, 470)  -- right line
+                                          fillRectangleBy black (32, 12) (20, 470)   -- right line
                                         ] ++
                                         fmap (convertToPicture chartreuse) snake ++    -- body
                                         fmap (convertToPicture orange) [snakeHead] ++  -- head
