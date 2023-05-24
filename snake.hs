@@ -107,7 +107,7 @@ movePlayer food direction snake = if foodEaten
                                 --(!) :: Ord k => Map k a -> k -> a, on this position, in Dict
                                 (headX, headY) = head snake
                                                         
-updateState :: Float -> GameState -> GameState
+updateState :: Float -> GameState -> GameState -- todo
 updateState seconds gameState =  if (gameOver) 
                                 then gameState
                                 else GameState newSnake newFood direction newGameOver newStdGen newScore
