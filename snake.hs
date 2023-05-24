@@ -21,7 +21,7 @@ windowBackground :: Color
 windowBackground = white
 
 initialState gameOver score = GameState { getSnake = [snake], getFood = food, 
-        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen 100, getScore = score}
+        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen 100, getScore = score} -- todo
         -- columns = 32, rows = 24, raw values are faster for rendering than dividing
         where   snake = (snakeX, snakeY)
                 snakeX = 8      -- 32 `div` 4
@@ -70,7 +70,7 @@ renderAll gameState = pictures $        [ fillRectangleBy black (16, 0) (660, 20
                 -- 20x20 size of food, snakeHead etc.
         
                 fillRectangleBy color' (x, y) (width, height) =  color color' $ scale 1 (-1) $ 
-                        translate (fromIntegral(x) * 20 - 320) (fromIntegral(y) * 20 - 240) $ 
+                        translate (fromIntegral x * 20 - 320) (fromIntegral y * 20 - 240) $ 
                         rectangleSolid width height
 
                 gameOverPicture = if (isGameOver gameState) 
@@ -122,7 +122,7 @@ updateState seconds gameState =  if (gameOver)
                                then score + 1
                                else score
                 (foodEaten, newSnake) = movePlayer food direction snake
-                (generatedFood, newStdGen) = generateNewFood newSnake stdGen
+                (generatedFood, newStdGen) = generateNewFood newSnake stdGen -- todo if...
                 newFood =   if foodEaten 
                               then generatedFood 
                               else food
@@ -161,4 +161,7 @@ servicePressedKeys _ gameState = gameState
 
 main :: IO ()
 main = play window windowBackground 8 (initialState True 0) renderAll servicePressedKeys updateState
+
+-- upravit random generování, a volat to, jen když opravdu potřebuju a změnit otáčení přidáním fce:
+-- co se updatuje a co by uživatel chtěl, aby se stalo a při novém framu to updatovat
 

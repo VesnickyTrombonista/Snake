@@ -56,6 +56,7 @@ Není zatím otestováno, jak se začne chovat generátor, pokud bychom tohoto s
 ### Možné vylepšení:
 Pro načítání skóre mezi jednotlivým spuštěním by bylo možné přidat dokument, který by sloužil pro čtení a zápis maximálního skóre a tak v případě velmi dobrého výsledku bychom tuto informaci neztratili.
 Pro rozměry by bylo vhodné už zavést globální proměnné, aby nebylo změnu informace přepisovat všude v kódu.
+Zároveň pro ovládání by se v kódu mohlo volat jednu funkci, ve které by se rozlišovalo, jestli je ovládání wasd nebo arrows. 
 
 #### Závěrem:
 Tvoření hry mě bavilo a dost jsem se u toho naučil, např. pracovat s haskellem a jeho knihovnami. Také mě potěšilo, že lze udělat okenní aplikaci a hru v ní.
