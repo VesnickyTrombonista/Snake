@@ -21,7 +21,7 @@ windowBackground :: Color
 windowBackground = white
 
 initialState gameOver score = GameState { getSnake = [snake], getFood = food, 
-        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen 100, getScore = score} -- todo
+        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen seed, getScore = score}
         -- columns = 32, rows = 24, raw values are faster for rendering than dividing
         where   snake = (snakeX, snakeY)
                 snakeX = 8      -- 32 `div` 4
@@ -29,6 +29,7 @@ initialState gameOver score = GameState { getSnake = [snake], getFood = food,
                 food = (foodX, foodY)
                 foodX = 16      -- 32 `div` 2
                 foodY = 12      -- 24 `div` 2
+                seed = 100 -- todo, call randomRIO or similar
 
 changeDirection :: GameState -> Direction -> GameState
 changeDirection state@(GameState snake food direction1 game random score) direction2 = 
@@ -108,7 +109,7 @@ movePlayer food direction snake = if foodEaten
                                 (headX, headY) = head snake
                                                         
 updateState :: Float -> GameState -> GameState -- todo
-updateState seconds gameState =  if (gameOver) 
+updateState seconds gameState =  if gameOver 
                                 then gameState
                                 else GameState newSnake newFood direction newGameOver newStdGen newScore
         where   snake = getSnake gameState 
@@ -123,7 +124,7 @@ updateState seconds gameState =  if (gameOver)
                                else score
                 (foodEaten, newSnake) = movePlayer food direction snake
                 (newFood, newStdGen) =  if foodEaten 
-                                          then (generatedFood, newStdGen) = generateNewFood newSnake stdGen
+                                          then generateNewFood newSnake stdGen
                                           else (food, stdGen)
                 newGameOver = checkGameOver newSnake
 
