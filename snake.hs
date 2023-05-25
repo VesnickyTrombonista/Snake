@@ -122,10 +122,9 @@ updateState seconds gameState =  if (gameOver)
                                then score + 1
                                else score
                 (foodEaten, newSnake) = movePlayer food direction snake
-                (generatedFood, newStdGen) = generateNewFood newSnake stdGen -- todo if...
-                newFood =   if foodEaten 
-                              then generatedFood 
-                              else food
+                (newFood, newStdGen) =  if foodEaten 
+                                          then (generatedFood, newStdGen) = generateNewFood newSnake stdGen
+                                          else (food, stdGen)
                 newGameOver = checkGameOver newSnake
 
 generateNewFood :: Snake -> StdGen -> (Food, StdGen)
@@ -162,6 +161,6 @@ servicePressedKeys _ gameState = gameState
 main :: IO ()
 main = play window windowBackground 8 (initialState True 0) renderAll servicePressedKeys updateState
 
--- upravit random generování, a volat to, jen když opravdu potřebuju a změnit otáčení přidáním fce:
+-- upravit random generování, a změnit otáčení přidáním fce:
 -- co se updatuje a co by uživatel chtěl, aby se stalo a při novém framu to updatovat
 
