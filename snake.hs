@@ -6,8 +6,9 @@ import System.Random
 type Score = Int
 type Food = (Int, Int)
 type Snake = [Food]
+-- type WantedChange :: Direction
 
-data Direction = UP | DOWN | LEFT | RIGHT deriving (Eq, Ord)
+data Direction = UP | DOWN | LEFT | RIGHT | NOT deriving (Eq, Ord)
 data GameState = GameState {getSnake :: Snake, getFood :: Food, getDirection :: Direction,
                             isGameOver :: Bool, getRandomStdGen :: StdGen, getScore :: Score}
 
@@ -20,7 +21,16 @@ window = InWindow "Snake Game" (800, 570) (250, 50) -- size and position from up
 windowBackground :: Color
 windowBackground = white
 
-initialState gameOver score = GameState { getSnake = [snake], getFood = food, 
+randomSeed :: IO Int
+randomSeed = randomIO
+
+wantedNewDirection :: Direction
+wantedNewDirection = NOT
+
+--setNewDirection :: GameState -> Direction -> GameState
+-- setNewDirection state direction = state
+
+initialState gameOver seed score = GameState { getSnake = [snake], getFood = food, 
         getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen seed, getScore = score}
         -- columns = 32, rows = 24, raw values are faster for rendering than dividing
         where   snake = (snakeX, snakeY)
@@ -28,8 +38,7 @@ initialState gameOver score = GameState { getSnake = [snake], getFood = food,
                 snakeY = 6      -- 24 `div` 4
                 food = (foodX, foodY)
                 foodX = 16      -- 32 `div` 2
-                foodY = 12      -- 24 `div` 2
-                seed = 100 -- todo, call randomRIO or similar
+                foodY = 12      -- 24 `div` 2 
 
 changeDirection :: GameState -> Direction -> GameState
 changeDirection state@(GameState snake food direction1 game random score) direction2 = 
@@ -99,14 +108,14 @@ renderAll gameState = pictures $        [ fillRectangleBy black (16, 0) (660, 20
                                         ]
 
 movePlayer :: Food -> Direction -> Snake -> (Bool, Snake)
-movePlayer food direction snake = if foodEaten 
-                                    then (True, newHead : snake)
-                                    else (False, newHead : init snake) -- init, new snake every frame
-                        where   foodEaten = food == newHead 
-                                newHead =  (headX + shiftX, headY + shiftY)
-                                (shiftX, shiftY) = directionVectors ! direction 
-                                --(!) :: Ord k => Map k a -> k -> a, on this position, in Dict
-                                (headX, headY) = head snake
+movePlayer food direction snake
+  | foodEaten = (True, newHead : snake)
+  | otherwise = (False, newHead : init snake) -- init, new snake every frame
+        where   foodEaten = food == newHead 
+                newHead =  (headX + shiftX, headY + shiftY)
+                (shiftX, shiftY) = directionVectors ! direction 
+                --(!) :: Ord k => Map k a -> k -> a, on this position, in Dict
+                (headX, headY) = head snake
                                                         
 updateState :: Float -> GameState -> GameState -- todo
 updateState seconds gameState =  if gameOver 
@@ -150,8 +159,11 @@ servicePressedKeys (EventKey (Char 's') Down _ _) gameState = changeDirection ga
 -- start + boost
 servicePressedKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState = 
         if (isGameOver gameState) 
-          then initialState False $ getScore gameState
+          then initState
           else boostDirection gameState
+                where
+                        (newSeed, _) = random (getRandomStdGen gameState)
+                        initState = initialState False newSeed $ getScore gameState
 -- Esc key is default used for exit
 
 servicePressedKeys _ gameState = gameState
@@ -160,7 +172,9 @@ servicePressedKeys _ gameState = gameState
 -- adding fps can change the difficulty because of speed
 
 main :: IO ()
-main = play window windowBackground 8 (initialState True 0) renderAll servicePressedKeys updateState
+main = do 
+        value <- randomSeed
+        play window windowBackground 8 (initialState True value 0) renderAll servicePressedKeys updateState
 
 -- upravit random generování, a změnit otáčení přidáním fce:
 -- co se updatuje a co by uživatel chtěl, aby se stalo a při novém framu to updatovat
