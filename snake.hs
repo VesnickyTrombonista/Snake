@@ -6,12 +6,10 @@ import System.Random
 type Score = Int
 type Food = (Int, Int)
 type Snake = [Food]
--- type WantedChange :: Direction
 
 data Direction = UP | DOWN | LEFT | RIGHT | NOT deriving (Eq, Ord)
 data GameState = GameState {getSnake :: Snake, getFood :: Food, getDirection :: Direction,
-                            isGameOver :: Bool, getRandomStdGen :: StdGen, wantedNewDirection :: Direction,
-                             getScore :: Score}
+                isGameOver :: Bool, getRandomStdGen :: StdGen, wantedNewDirection :: Direction, getScore :: Score}
 
 directionVectors = fromList [(UP, (0, -1)), (DOWN, (0, 1)), (LEFT, (-1, 0)), (RIGHT, (1, 0))] 
 -- make up like dictionary
@@ -25,13 +23,13 @@ windowBackground = white
 randomSeed :: IO Int
 randomSeed = randomIO
 
-setWantedDirection :: GameState -> Direction -> GameState
+setWantedDirection :: GameState -> Direction -> GameState -- set want player want to change
 setWantedDirection (GameState snake food direction game random newDirection score) wantedDirection = 
         GameState snake food direction game random wantedDirection score
 
 initialState gameOver seed score = GameState { getSnake = [snake], getFood = food, 
-        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen seed, wantedNewDirection = NOT,
-         getScore = score}
+        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen seed, wantedNewDirection = NOT, 
+        getScore = score} 
         -- columns = 32, rows = 24, raw values are faster for rendering than dividing
         where   snake = (snakeX, snakeY)
                 snakeX = 8      -- 32 `div` 4
@@ -117,14 +115,16 @@ movePlayer food direction snake
                 (headX, headY) = head snake
                                                         
 updateState :: Float -> GameState -> GameState
-updateState seconds gameState =  if gameOver 
-        then gameState
-        else 
-                if (newDir == NOT)
+updateState seconds gameState =  
+        if gameOver 
+          then gameState
+          else 
+                if (newDir == NOT) -- can't changeDIrection every time because of callStack
                   then state
                   else changeDirection state -- is possible somehow check, if we are in the next frame??
 
         where   state = (GameState newSnake newFood direction newGameOver newStdGen newDir newScore)
+
                 snake = getSnake gameState 
                 food = getFood gameState
                 direction = getDirection gameState
@@ -180,5 +180,3 @@ main :: IO ()
 main = do 
         value <- randomSeed
         play window windowBackground 8 (initialState True value 0) renderAll servicePressedKeys updateState
-
-
