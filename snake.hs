@@ -121,7 +121,7 @@ updateState seconds gameState =
           else 
                 if (newDir == NOT) -- can't changeDIrection every time because of callStack
                   then state
-                  else changeDirection state -- is possible somehow check, if we are in the next frame??
+                  else changeDirection state
 
         where   state = (GameState newSnake newFood direction newGameOver newStdGen newDir newScore)
 
