@@ -10,7 +10,8 @@ type Snake = [Food]
 
 data Direction = UP | DOWN | LEFT | RIGHT | NOT deriving (Eq, Ord)
 data GameState = GameState {getSnake :: Snake, getFood :: Food, getDirection :: Direction,
-                            isGameOver :: Bool, getRandomStdGen :: StdGen, getScore :: Score}
+                            isGameOver :: Bool, getRandomStdGen :: StdGen, wantedNewDirection :: Direction,
+                             getScore :: Score}
 
 directionVectors = fromList [(UP, (0, -1)), (DOWN, (0, 1)), (LEFT, (-1, 0)), (RIGHT, (1, 0))] 
 -- make up like dictionary
@@ -24,14 +25,13 @@ windowBackground = white
 randomSeed :: IO Int
 randomSeed = randomIO
 
-wantedNewDirection :: Direction
-wantedNewDirection = NOT
-
---setNewDirection :: GameState -> Direction -> GameState
--- setNewDirection state direction = state
+setWantedDirection :: GameState -> Direction -> GameState
+setWantedDirection (GameState snake food direction game random newDirection score) wantedDirection = 
+        GameState snake food direction game random wantedDirection score
 
 initialState gameOver seed score = GameState { getSnake = [snake], getFood = food, 
-        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen seed, getScore = score}
+        getDirection = RIGHT, isGameOver = gameOver, getRandomStdGen = mkStdGen seed, wantedNewDirection = NOT,
+         getScore = score}
         -- columns = 32, rows = 24, raw values are faster for rendering than dividing
         where   snake = (snakeX, snakeY)
                 snakeX = 8      -- 32 `div` 4
@@ -40,15 +40,9 @@ initialState gameOver seed score = GameState { getSnake = [snake], getFood = foo
                 foodX = 16      -- 32 `div` 2
                 foodY = 12      -- 24 `div` 2 
 
-changeDirection :: GameState -> Direction -> GameState
-changeDirection state@(GameState snake food direction1 game random score) direction2 = 
-        if ((fst vector1 + fst vector2) == 0 && (snd vector1 + snd vector2) == 0)
-          then state -- not backwards and keep the same way
-          else GameState snake food direction2 game random score 
-        -- when e.g. direction1=up and change left+down is very fast, then is colision like backwards movement
-        where 
-                vector1 = directionVectors ! direction1
-                vector2 = directionVectors ! direction2
+changeDirection :: GameState -> GameState
+changeDirection state@(GameState snake food direction game random newDirection score) = 
+        GameState snake food newDirection game random NOT score 
 
 boostDirection :: GameState -> GameState -- used, when 'space' is down for double speed
 boostDirection gameState = updateState 2 gameState 
@@ -117,17 +111,23 @@ movePlayer food direction snake
                 --(!) :: Ord k => Map k a -> k -> a, on this position, in Dict
                 (headX, headY) = head snake
                                                         
-updateState :: Float -> GameState -> GameState -- todo
+updateState :: Float -> GameState -> GameState
 updateState seconds gameState =  if gameOver 
-                                then gameState
-                                else GameState newSnake newFood direction newGameOver newStdGen newScore
-        where   snake = getSnake gameState 
+        then gameState
+        else 
+                if (newDir == NOT)
+                  then state
+                  else changeDirection state -- is possible somehow check, if we are in the next frame??
+
+        where   state = (GameState newSnake newFood direction newGameOver newStdGen newDir newScore)
+                snake = getSnake gameState 
                 food = getFood gameState
                 direction = getDirection gameState
                 gameOver = isGameOver gameState
                 stdGen = getRandomStdGen gameState
+                newDir = wantedNewDirection gameState
                 score = getScore gameState
-                -- getting actual arguments
+
                 newScore =   if (length newSnake > score)
                                then score + 1
                                else score
@@ -147,15 +147,15 @@ generateNewFood snake stdGen =  if newFood `elem` snake
 
 servicePressedKeys :: Event -> GameState -> GameState
 -- arrows
-servicePressedKeys (EventKey (SpecialKey KeyLeft ) Down _ _) gameState = changeDirection gameState LEFT
-servicePressedKeys (EventKey (SpecialKey KeyRight) Down _ _) gameState = changeDirection gameState RIGHT 
-servicePressedKeys (EventKey (SpecialKey KeyUp   ) Down _ _) gameState = changeDirection gameState UP 
-servicePressedKeys (EventKey (SpecialKey KeyDown ) Down _ _) gameState = changeDirection gameState DOWN 
+servicePressedKeys (EventKey (SpecialKey KeyLeft ) Down _ _) gameState = setWantedDirection gameState LEFT
+servicePressedKeys (EventKey (SpecialKey KeyRight) Down _ _) gameState = setWantedDirection gameState RIGHT 
+servicePressedKeys (EventKey (SpecialKey KeyUp   ) Down _ _) gameState = setWantedDirection gameState UP 
+servicePressedKeys (EventKey (SpecialKey KeyDown ) Down _ _) gameState = setWantedDirection gameState DOWN 
 -- wasd
-servicePressedKeys (EventKey (Char 'a') Down _ _) gameState = changeDirection gameState LEFT
-servicePressedKeys (EventKey (Char 'd') Down _ _) gameState = changeDirection gameState RIGHT 
-servicePressedKeys (EventKey (Char 'w') Down _ _) gameState = changeDirection gameState UP 
-servicePressedKeys (EventKey (Char 's') Down _ _) gameState = changeDirection gameState DOWN 
+servicePressedKeys (EventKey (Char 'a') Down _ _) gameState = setWantedDirection gameState LEFT
+servicePressedKeys (EventKey (Char 'd') Down _ _) gameState = setWantedDirection gameState RIGHT 
+servicePressedKeys (EventKey (Char 'w') Down _ _) gameState = setWantedDirection gameState UP 
+servicePressedKeys (EventKey (Char 's') Down _ _) gameState = setWantedDirection gameState DOWN 
 -- start + boost
 servicePressedKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState = 
         if (isGameOver gameState) 
@@ -176,6 +176,4 @@ main = do
         value <- randomSeed
         play window windowBackground 8 (initialState True value 0) renderAll servicePressedKeys updateState
 
--- upravit random generování, a změnit otáčení přidáním fce:
--- co se updatuje a co by uživatel chtěl, aby se stalo a při novém framu to updatovat
 
