@@ -42,7 +42,12 @@ initialState gameOver seed score = GameState { getSnake = [snake], getFood = foo
 
 changeDirection :: GameState -> GameState
 changeDirection state@(GameState snake food direction game random newDirection score) = 
-        GameState snake food newDirection game random NOT score 
+        if ((fst vector1 + fst vector2) == 0 && (snd vector1 + snd vector2) == 0)
+          then state -- not backwards and keep the same way
+          else GameState snake food newDirection game random NOT score
+        where 
+                vector1 = directionVectors ! direction
+                vector2 = directionVectors ! newDirection 
 
 boostDirection :: GameState -> GameState -- used, when 'space' is down for double speed
 boostDirection gameState = updateState 2 gameState 
