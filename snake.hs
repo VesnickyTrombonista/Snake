@@ -180,3 +180,6 @@ main :: IO ()
 main = do 
         value <- randomSeed
         play window windowBackground 8 (initialState True value 0) renderAll servicePressedKeys updateState
+        
+        
+-- pokus        
